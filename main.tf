@@ -12,14 +12,6 @@ resource "random_integer" "email_num" {
   max = 999999
 } 
 
-resource "random_pet" "first_name" {
-  length = 1
-}
-
-resource "random_pet" "last_name" {
-  length = 1
-}
-
 provider "http" {}
 
 locals {
@@ -30,9 +22,9 @@ locals {
 
   # JSON payload (as a string)
    payload = jsonencode({
-      first_name        = "${random_pet.first_name.id}"
-      last_name         = "${random_pet.last_name.id}"
-      email             = "instruqt+${random_integer.email_num.result}@illumio.com"
+      first_name = "Illumio"
+      last_name  = "Training"
+      email             = "trn+${random_integer.email_num.result}@illumio.com"
       company_name      = "Illumio account ${random_integer.email_num.result}"
     domain            = "console.illum.io"
     preferred_region  = "${var.preferred_region}"
