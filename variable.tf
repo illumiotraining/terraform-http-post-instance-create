@@ -1,4 +1,15 @@
 # Define the variable for the token
+variable "account_count" {
+  description = "Number of accounts (tenants) to create."
+  type        = number
+  default     = 1
+
+  validation {
+    condition     = var.account_count >= 1 && var.account_count <= 100
+    error_message = "account_count must be between 1 and 100."
+  }
+}
+
 variable "api_token" {
   description = "Bearer token used for Authorization header"
   type        = string
