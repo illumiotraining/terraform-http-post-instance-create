@@ -1,52 +1,74 @@
-# output "debug_raw_response" {
-#  value = local.response
-# }
+# outputs.tf (multi-account)
+# If you set var.account_count = 1, these outputs behave like your current ones,
+# just wrapped as single-element lists.
 
 output "message" {
- value = local.response.message
+  description = "Message from the API response (index-aligned)."
+  value       = [for r in local.responses : r.message]
 }
-# --- Output values ---
+
 output "user_email" {
-  value = local.response.users[0].email
+  description = "Primary user email for each created tenant (index-aligned)."
+  value       = [for r in local.responses : r.users[0].email]
 }
 
 output "apikey_id" {
-  value     = local.response.users[0].apikey.keyId
+  description = "API key ID for the primary user (index-aligned)."
+  value       = [for r in local.responses : r.users[0].apikey.keyId]
+  sensitive   = true
 }
 
 output "apikey_secret" {
-  value     = local.response.users[0].apikey.secret
+  description = "API key secret for the primary user (index-aligned)."
+  value       = [for r in local.responses : r.users[0].apikey.secret]
+  sensitive   = true
 }
 
 output "apikey_success" {
-  value     = local.response.users[0].apikey.success
+  description = "API key success flag for the primary user (index-aligned)."
+  value       = [for r in local.responses : r.users[0].apikey.success]
 }
 
 output "magiclink" {
-  value     = local.response.users[0].magiclink
+  description = "Magic link for the primary user (index-aligned)."
+  value       = [for r in local.responses : r.users[0].magiclink]
+  sensitive   = true
 }
 
 output "tenant_id" {
-  value = local.response.tenant.id
+  description = "Tenant ID (index-aligned)."
+  value       = [for r in local.responses : r.tenant.id]
 }
 
 output "org_id" {
-  value = local.response.tenant.core.id
+  description = "Org/Core ID (index-aligned)."
+  value       = [for r in local.responses : r.tenant.core.id]
 }
 
 output "pce_fqdn" {
-  value = local.response.tenant.core.pceFqdn
+  description = "PCE FQDN assigned (index-aligned)."
+  value       = [for r in local.responses : r.tenant.core.pceFqdn]
 }
 
 output "saApiKey_keyId" {
-  value = local.response.tenant.saApiKey.keyId
+  description = "Service account API key ID (index-aligned)."
+  value       = [for r in local.responses : r.tenant.saApiKey.keyId]
+  sensitive   = true
 }
 
 output "saApiKey_secret" {
-  value = local.response.tenant.saApiKey.secret
+  description = "Service account API key secret (index-aligned)."
+  value       = [for r in local.responses : r.tenant.saApiKey.secret]
+  sensitive   = true
 }
 
 output "saApiKey_success" {
-  value = local.response.tenant.saApiKey.success
+  description = "Service account API key success flag (index-aligned)."
+  value       = [for r in local.responses : r.tenant.saApiKey.success]
 }
 
+# Optional: keep a raw debug output for troubleshooting
+# output "debug_raw_responses" {
+#   value     = local.responses
+#   sensitive = true
+# }
