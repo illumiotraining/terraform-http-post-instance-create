@@ -67,6 +67,11 @@ output "saApiKey_success" {
   value       = [for r in local.responses : r.tenant.saApiKey.success]
 }
 
+output "expiration_days" {
+  description = "Tenant expiration (days) used for this run."
+  value       = var.expiration_days
+}
+
 # Optional: keep a raw debug output for troubleshooting
 # output "debug_raw_responses" {
 #   value     = local.responses
