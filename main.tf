@@ -4,12 +4,15 @@ terraform {
       source  = "hashicorp/http"
       version = "~> 3.4"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
+    }
   }
 }
 
 provider "http" {}
 
-# One random number per account
 resource "random_integer" "email_num" {
   count = var.account_count
   min   = 100000
@@ -17,32 +20,26 @@ resource "random_integer" "email_num" {
 }
 
 locals {
-  # License start and end dates
   start = formatdate("YYYY-MM-DD'T'HH:mm:ss'Z'", timestamp())
   end   = formatdate("YYYY-MM-DD'T'HH:mm:ss'Z'", timeadd(local.start, "${var.license_days * 24}h"))
 
-  # JSON payloads (one per account)
   payloads = [
     for i in range(var.account_count) : jsonencode({
-      first_name    = "Illumio"
-      last_name     = "Training"
-      email         = "trn+${random_integer.email_num[i].result}@illumio.com"
-      company_name  = "Illumio account ${random_integer.email_num[i].result}"
-      domain        = "console.illum.io"
+      first_name       = "Illumio"
+      last_name        = "Training"
+      email            = "trn+${random_integer.email_num[i].result}@illumio.com"
+      company_name     = "Illumio account ${random_integer.email_num[i].result}"
+      domain           = "console.illum.io"
       preferred_region = var.preferred_region
       country_code     = var.country_code
       pce_fqdn         = var.pce_cluster_name
-      store_rbac       = true
+
       optional_features = ["magiclinks_enabled"]
 
       settings = {
         auth = {
-          passkeys = {
-            enabled = true
-          }
-          passwords = {
-            enabled = true
-          }
+          passkeys = { enabled = true }
+          passwords = { enabled = true }
         }
       }
 
@@ -71,7 +68,6 @@ locals {
   ]
 }
 
-# Send POST request (one per account)
 data "http" "post_request" {
   count  = var.account_count
   url    = var.base_url
@@ -91,9 +87,6 @@ data "http" "post_request" {
   }
 }
 
-# --- Parse JSON responses (list) ---
 locals {
-  responses = [
-    for r in data.http.post_request : jsondecode(r.response_body)
-  ]
+  responses = [for r in data.http.post_request : jsondecode(r.response_body)]
 }
